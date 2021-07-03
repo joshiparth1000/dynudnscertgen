@@ -11,6 +11,7 @@ import time
 def getoptions(args):
     parser = argparse.ArgumentParser(description="Lets Encrypt Certificate Generate")
     parser.add_argument("--domain", help="Domain", required=True)
+    parser.add_argument("--actkey", help="Account Key", required=True)
     parser.add_argument("--target", help="Target Folder", default="/target", required=False)
     parser.add_argument("--apikey", help="Dynu DNS API  Key", required=True)
     return parser.parse_args(args)
@@ -21,7 +22,7 @@ def main(args):
     options = getoptions(args)
     cert_path = os.path.join(options.target, 'certificate.crt')
     cert_key_path = os.path.join(options.target, 'certificate.key')
-    acct_key_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'account.key')
+    acct_key_path = options.actkey
 
     if os.path.exists(cert_path):
         cert = open(cert_path, 'r')
