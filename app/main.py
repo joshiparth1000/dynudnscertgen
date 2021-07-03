@@ -1,4 +1,3 @@
-import argparse
 import sys
 from sewer import client, config
 from sewer.crypto import AcmeKey, AcmeAccount, KeyDesc
@@ -8,21 +7,10 @@ import OpenSSL.crypto
 from datetime import datetime
 import time
 
-def getoptions(args):
-    parser = argparse.ArgumentParser(description="Lets Encrypt Certificate Generate")
-    parser.add_argument("--domain", help="Domain", required=True)
-    parser.add_argument("--actkey", help="Account Key", default="/conf/account.key", required=False)
-    parser.add_argument("--target", help="Target Folder", default="/target", required=False)
-    parser.add_argument("--apikey", help="Dynu DNS API Key", required=True)
-    return parser.parse_args(args)
-
-
 def main(args):
-    global options
-    options = getoptions(args)
-    cert_path = os.path.join(options.target, 'certificate.crt')
-    cert_key_path = os.path.join(options.target, 'certificate.key')
-    acct_key_path = options.actkey
+    cert_path = '/target/certificate.crt'
+    cert_key_path = '/target/certificate.key'
+    acct_key_path = '/conf/account.key'
 
     if os.path.exists(cert_path):
         cert = open(cert_path, 'r')
@@ -48,7 +36,7 @@ def main(args):
 
     cert_key = open(cert_key_path, 'rb')
     cert_key = AcmeKey.from_pem(cert_key.read())
-    dns_class = DynuDns(api_key=options.apikey)
+    dns_class = DynuDns(api_key=os.getenv('API_KEY'))
 
     success = False
     i = 1
@@ -56,8 +44,8 @@ def main(args):
     while i <=5 and not success:
         try :
             acme_client = client.Client(
-                domain_name='*.' + options.domain,
-                domain_alt_names=[options.domain],
+                domain_name='*.' + os.getenv('DOMAIN'),
+                domain_alt_names=[os.getenv('DOMAIN')],
                 provider=dns_class,
                 account=account,
                 cert_key=cert_key,
