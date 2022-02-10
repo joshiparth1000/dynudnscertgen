@@ -20,7 +20,8 @@ def main(args):
         expiry_time = (utc_time - datetime(1970, 1, 1)).total_seconds()
         cur_time = datetime.now().timestamp()
 
-        if cur_time + 24*60*60 < expiry_time:
+        if cur_time + 15*24*60*60 < expiry_time:
+            print('Certificate valid for more than 15 days')
             return
 
     if not os.path.exists(cert_key_path):
@@ -66,6 +67,8 @@ def main(args):
         finally:
             i += 1
 
+    if success:
+        print('Certificate renewed')
 
 
 if __name__ == '__main__':
